@@ -37,7 +37,7 @@ gulp.task('css', () => {
     .pipe(gulp.dest('working/css'))
 })
 
-gulp.task('premailer', () => {
+gulp.task('premailer', (done) => {
   // read the html file
   return fs.readFile('working/index.html', 'utf-8', (err, html) => {
     if (err) throw (err)
@@ -48,28 +48,11 @@ gulp.task('premailer', () => {
       //  => juice does not find the css because of the relative path import in the html file
       fs.writeFile('build/index.html', juice.inlineContent(html, css), (err) => {
         if (err) throw (err)
-        console.log('Wrote to build')
-      })
-    })
-  })
-})
-
-const premailer = (done) => {
-  fs.readFile('working/index.html', 'utf-8', (err, html) => {
-    if (err) throw (err)
-    // read the css file
-    fs.readFile('working/css/styles.css', 'utf-8', (err, css) => {
-      if (err) throw (err)
-      // pass both the html and css string into juice. This is done because of path issues in the html
-      //  => juice does not find the css because of the relative path import in the html file
-      fs.writeFile('build/index.html', juice.inlineContent(html, css), (err) => {
-        if (err) throw (err)
-        console.log('Wrote to build')
         done()
       })
     })
   })
-}
+})
 
 gulp.task('serve', gulp.series('sass', function () {
   browserSync.init({
@@ -79,4 +62,4 @@ gulp.task('serve', gulp.series('sass', function () {
   gulp.watch('working/*.html').on('change', browserSync.reload)
 }))
 
-gulp.task('build', gulp.series('css', premailer))
+gulp.task('build', gulp.series('css', 'premailer'))
