@@ -7,14 +7,6 @@ const uncss = require('gulp-uncss')
 const fs = require('fs')
 const juice = require('juice')
 
-gulp.task('serve', ['sass'], function () {
-  browserSync.init({
-    server: 'working'
-  })
-  gulp.watch('working/scss/*.scss', ['sass']).on('change', browserSync.reload)
-  gulp.watch('working/*.html').on('change', browserSync.reload)
-})
-
 // Compile sass into CSS & auto-inject into browsers
 gulp.task('sass', () => {
   return gulp.src('working/scss/*.scss')
@@ -61,3 +53,13 @@ gulp.task('premailer', () => {
     })
   })
 })
+
+gulp.task('serve', gulp.series('sass', function () {
+  browserSync.init({
+    server: 'working'
+  })
+  gulp.watch('working/scss/*.scss', ['sass']).on('change', browserSync.reload)
+  gulp.watch('working/*.html').on('change', browserSync.reload)
+}))
+
+gulp.task('build', gulp.series('css', 'premailer'))

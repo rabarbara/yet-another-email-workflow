@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "gulp serve",
     "css": "gulp css",
-    "build": "gulp premailer"
+    "build": "gulp build",
+    "version": "gulp --v"
   },
   "repository": {
     "type": "git",
@@ -30,7 +31,7 @@
     "eslint-config-standard": "^6.2.1",
     "eslint-plugin-promise": "^3.4.2",
     "eslint-plugin-standard": "^2.0.1",
-    "gulp": "^3.9.1",
+    "gulp": "github:gulpjs/gulp#4.0",
     "gulp-cli": "^1.2.2",
     "gulp-plumber": "^1.1.0",
     "gulp-sass": "^3.1.0",
