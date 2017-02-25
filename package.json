@@ -4,7 +4,7 @@
   "description": "Yet another email workflow to speed up email development",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha --watch",
     "watch": "gulp serve",
     "css": "gulp css",
     "build": "gulp build",
@@ -39,7 +39,9 @@
     "gulp-util": "^3.0.8",
     "juice": "^4.0.2",
     "mailgun-js": "^0.8.2",
+    "mocha": "^3.2.0",
     "node-sass": "^4.5.0",
-    "premailer-gulp-juice": "^0.1.7"
+    "premailer-gulp-juice": "^0.1.7",
+    "sinon": "^1.17.7"
   }
 }
