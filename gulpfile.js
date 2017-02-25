@@ -46,7 +46,9 @@ gulp.task('premailer', (done) => {
       if (err) throw (err)
       // pass both the html and css string into juice. This is done because of path issues in the html
       //  => juice does not find the css because of the relative path import in the html file
-      fs.writeFile('build/index.html', juice.inlineContent(html, css), (err) => {
+      // we also need to remove the link to css to not cause issues in email clients
+      const removedCssLink = juice.inlineContent(html, css).replace('<link rel="stylesheet" href="../css/styles.css">', '')
+      fs.writeFile('build/index.html', removedCssLink, (err) => {
         if (err) throw (err)
         done()
       })
