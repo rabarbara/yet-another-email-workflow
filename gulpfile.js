@@ -56,15 +56,19 @@ gulp.task('premailer', (done) => {
   })
 })
 
+// start up browserSync
 gulp.task('browserSync', () => {
   browserSync.init({
     server: 'working'
   })
 })
 
+// reload browserSync
 gulp.task('reload', () => {
   browserSync.reload()
 })
+
+// watch scss and html files for changes
 gulp.task('watchSassAndHtml', () => {
   gulp.watch('working/scss/*.scss', gulp.series('sass', 'reload'))
   gulp.watch('working/scss/*.scss', gulp.series('reload'))
