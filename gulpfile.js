@@ -56,12 +56,19 @@ gulp.task('premailer', (done) => {
   })
 })
 
-gulp.task('serve', gulp.series('sass', function () {
+gulp.task('browserSync', () => {
   browserSync.init({
     server: 'working'
   })
-  gulp.watch('working/scss/*.scss', ['sass']).on('change', browserSync.reload)
-  gulp.watch('working/*.html').on('change', browserSync.reload)
-}))
+})
+
+gulp.task('reload', () => {
+  browserSync.reload()
+})
+gulp.task('watchSassAndHtml', () => {
+  gulp.watch('working/scss/*.scss', gulp.series('sass', 'reload'))
+  gulp.watch('working/scss/*.scss', gulp.series('reload'))
+})
 
 gulp.task('build', gulp.series('css', 'premailer'))
+gulp.task('serve', gulp.series('sass', gulp.series('sass', 'browserSync', 'watchSassAndHtml')))
