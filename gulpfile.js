@@ -4,7 +4,7 @@ const sass = require('gulp-sass')
 const plumber = require('gulp-plumber')
 const gutil = require('gulp-util')
 const uncss = require('gulp-uncss')
-const concat = require('gulp-concat')
+// const concat = require('gulp-concat')
 
 gulp.task('serve', ['sass'], function () {
   browserSync.init({
@@ -40,6 +40,5 @@ gulp.task('css', () => {
     .pipe(uncss({
       html: ['working/index.html']
     }))
-    .pipe(concat('main.css'))
     .pipe(gulp.dest('working/css'))
 })
