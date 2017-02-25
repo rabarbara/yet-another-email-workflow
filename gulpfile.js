@@ -18,6 +18,7 @@ gulp.task('serve', ['sass'], function () {
 // Compile sass into CSS & auto-inject into browsers
 gulp.task('sass', () => {
   return gulp.src('working/scss/*.scss')
+      // plumber is used so that the watch task does not break when there is some wrong code
       .pipe(plumber(function (error) {
         gutil.beep()
         console.log(error)
@@ -45,10 +46,14 @@ gulp.task('css', () => {
 })
 
 gulp.task('premailer', () => {
+  // read the html file
   return fs.readFile('working/index.html', 'utf-8', (err, html) => {
     if (err) throw (err)
+    // read the css file
     fs.readFile('working/css/styles.css', 'utf-8', (err, css) => {
       if (err) throw (err)
+      // pass both the html and css string into juice. This is done because of path issues in the html
+      //  => juice does not find the css because of the relative path import in the html file
       fs.writeFile('build/index.html', juice.inlineContent(html, css), (err) => {
         if (err) throw (err)
         console.log('Wrote to build')
