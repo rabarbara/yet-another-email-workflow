@@ -4,7 +4,8 @@ const sass = require('gulp-sass')
 const plumber = require('gulp-plumber')
 const gutil = require('gulp-util')
 const uncss = require('gulp-uncss')
-// const concat = require('gulp-concat')
+const fs = require('fs')
+const juice = require('juice')
 
 gulp.task('serve', ['sass'], function () {
   browserSync.init({
@@ -41,4 +42,17 @@ gulp.task('css', () => {
       html: ['working/index.html']
     }))
     .pipe(gulp.dest('working/css'))
+})
+
+gulp.task('premailer', () => {
+  return fs.readFile('working/index.html', 'utf-8', (err, html) => {
+    if (err) throw (err)
+    fs.readFile('working/css/styles.css', 'utf-8', (err, css) => {
+      if (err) throw (err)
+      fs.writeFile('build/index.html', juice.inlineContent(html, css), (err) => {
+        if (err) throw (err)
+        console.log('Wrote to build')
+      })
+    })
+  })
 })
