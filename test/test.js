@@ -27,9 +27,9 @@ describe('replaceLinks takes a string and an object and replaces all instances o
     let spy = sinon.spy(console, 'log')
     replaceLinks(basicString, linksObject)
     assert(spy.calledWith('Warning: no links are provided, html goes through as is.'))
-
-    spy.restore()
     spy.reset()
+    spy.restore()
+
   })
   describe('replaceLinks replaces all instances of a string in a template', function () {
     it('replaces all instances if there are more than one', function () {
@@ -47,6 +47,19 @@ describe('replaceLinks takes a string and an object and replaces all instances o
       let linksObject = {'link1': 'https://www.google.com', 'link2': 'https://www.github.com', 'link3': 'https://www.mdn.com'}
       assert.equal(replaceLinks(basicString, linksObject), '<a href="https://www.google.com"></a><a href="https://www.github.com"></a><a href="https://www.google.com"></a>')
     })
-  
+    it('warns that some elements were not replaced if there are still some left in the html', function () {
+      let basicString = '<a href="#{link1}"></a><a href="#{link2}"></a><a href="#{link1}"></a><a href="#{link4}"></a><a href="#{link4}"></a><a href="#{link6}"></a>'
+      let linksObject = {'link1': 'https://www.google.com', 'link2': 'https://www.github.com', 'link3': 'https://www.mdn.com'}
+      let spy = sinon.spy(console, 'log')
+
+      replaceLinks(basicString, linksObject)
+      assert(spy.calledOnce)
+
+      assert(spy.calledWith('Warning: there are still 3 instances not replaced: link4,link4,link6'))
+
+      spy.reset()
+      spy.restore()
+
+    })
   })
 })

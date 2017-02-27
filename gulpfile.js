@@ -53,6 +53,18 @@ const replaceLinks = (str, replacelist) => {
       let replacestring = new RegExp(`#{${key}}`, 'g')
       html = html.replace(replacestring, replacelist[key])
     }
+    let basicReg = /#{(.*?)}/g
+    let els = html.match(basicReg)
+    if (els !== null) {
+      // find all matches and filter out the fluff
+      // TODO think about if a set would be more appropriate as it would only list the unique values
+      /*
+      let allElements = new Set(els.map(x => x.replace('#{','').replace('}', '')))
+      console.log(`Warning: there are still ${allElements.size} elements not replaced: ${[...allElements]}'`)
+      */
+      let allElements = els.map(x => x.replace('#{', '').replace('}', ''))
+      console.log(`Warning: there are still ${allElements.length} instances not replaced: ${allElements}`)
+    }
     return html
   } else {
     console.log('Warning: no links are provided, html goes through as is.')
@@ -70,7 +82,7 @@ gulp.task('premailer', (done) => {
       // pass both the html and css string into juice. This is done because of path issues in the html
       //  => juice does not find the css because of the relative path import in the html file
       // we also need to remove the link to css to not cause issues in email clients
-      let html = replaceLinks(html)
+      let email = replaceLinks(html,{"link1":"lasdfasfd"})
       const removedCssLink = juice.inlineContent(html, css).replace('<link rel="stylesheet" href="../css/styles.css">', '')
       fs.writeFile('build/index.html', removedCssLink, (err) => {
         if (err) throw (err)
