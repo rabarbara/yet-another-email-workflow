@@ -55,6 +55,7 @@ const replaceLinks = (str, replacelist) => {
     }
     return html
   } else {
+    console.log('Warning: no links are provided, html goes through as is.')
     return str
   }
 }
