@@ -43,7 +43,7 @@ gulp.task('css', () => {
 * @param {object}
 * @return {string}
 */
-const replaceLinks = (str, replacelist) => {
+const replaceLinks = (str, replacelist = {}) => {
   // there has to be a string to pass through even if replacelist is empty
   if (str.length < 1) throw new Error('File is empty')
   // if there is no replacelist or it is empty, pass through the value
@@ -83,7 +83,7 @@ gulp.task('premailer', (done) => {
       //  => juice does not find the css because of the relative path import in the html file
       // we also need to remove the link to css to not cause issues in email clients
       let email = replaceLinks(html, {})
-      const removedCssLink = juice.inlineContent(html, css).replace('<link rel="stylesheet" href="../css/styles.css">', '')
+      const removedCssLink = juice.inlineContent(email, css).replace('<link rel="stylesheet" href="../css/styles.css">', '')
       fs.writeFile('build/index.html', removedCssLink, (err) => {
         if (err) throw (err)
         done()
