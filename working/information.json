@@ -1,0 +1,19 @@
+{
+  "subject": "",
+  "senderName": "",
+  "senderEmail":"",
+  "replyTo": [],
+  "links": {
+    "links go here":""
+  },
+  "utm": {
+    "source": "",
+    "medium": "",
+    "name": "",
+    "term": "",
+    "content": ""
+  },
+  "custom": {
+
+  }
+}
