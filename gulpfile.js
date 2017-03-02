@@ -6,6 +6,8 @@ const gutil = require('gulp-util')
 const uncss = require('gulp-uncss')
 const fs = require('fs')
 const juice = require('juice')
+const path = require('path')
+const information = require(path.join(__dirname, 'working/information.json'))
 
 // Compile sass into CSS & auto-inject into browsers
 gulp.task('sass', () => {
@@ -82,7 +84,7 @@ gulp.task('premailer', (done) => {
       // pass both the html and css string into juice. This is done because of path issues in the html
       //  => juice does not find the css because of the relative path import in the html file
       // we also need to remove the link to css to not cause issues in email clients
-      let email = replaceLinks(html, {})
+      let email = replaceLinks(html, information.links)
       const removedCssLink = juice.inlineContent(email, css).replace('<link rel="stylesheet" href="../css/styles.css">', '')
       fs.writeFile('build/index.html', removedCssLink, (err) => {
         if (err) throw (err)
