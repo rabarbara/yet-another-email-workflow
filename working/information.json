@@ -6,14 +6,15 @@
   "links": {
     "links go here":"https://www.google.com"
   },
-  "utm": {
-    "source": "",
-    "medium": "",
-    "name": "",
-    "term": "",
-    "content": ""
-  },
+  "parameters": {
+    "utm": {
+      "source": "",
+      "medium": "",
+      "name": "",
+      "term": "",
+      "content": ""
+    },
   "custom": {
-
+    }
   }
 }
