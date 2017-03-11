@@ -1,6 +1,8 @@
 const assert = require('assert')
 const sinon = require('sinon')
 const replaceLinks = require('../gulpfile').replaceLinks
+const addParameters = require('../gulpfile').addParameters
+const cheerio = require('cheerio')
 
 describe('replaceLinks takes a string and an object and replaces all instances of a special substring', function () {
   it('replace template expression with a link', function () {
@@ -59,7 +61,7 @@ describe('replaceLinks takes a string and an object and replaces all instances o
 
       spy.reset()
       spy.restore()
-
     })
   })
 })
+
