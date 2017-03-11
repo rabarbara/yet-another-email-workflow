@@ -27,6 +27,7 @@
   "homepage": "https://github.com/rabarbara/yet-another-email-workflow#readme",
   "devDependencies": {
     "browser-sync": "^2.18.8",
+    "cheerio": "^0.22.0",
     "eslint": "^3.16.1",
     "eslint-config-standard": "^6.2.1",
     "eslint-plugin-promise": "^3.4.2",
