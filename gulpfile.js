@@ -113,6 +113,7 @@ const createParameterString = (parameters) => {
 * replaces each instance of a href atrribute in the first argument for the values provided in the second argument
 * @param {string}
 * @param {string}
+* @param {function}
 * @return {string}
 */
 const addParameters = (str, parameters = '', cheerio) => {
