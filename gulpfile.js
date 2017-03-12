@@ -9,6 +9,8 @@ const juice = require('juice')
 const path = require('path')
 const information = require(path.join(__dirname, 'working/information.json'))
 const html2txt = require('gulp-html2txt')
+const cheerio = require('cheerio')
+
 
 // Compile sass into CSS & auto-inject into browsers
 gulp.task('sass', () => {
@@ -75,6 +77,21 @@ const replaceLinks = (str, replacelist = {}) => {
   }
 }
 
+/**
+* replaces each instance of a href atrribute in the first argument for the values provided in the second argument
+* @param {string}
+* @param {object}
+* @return {string}
+*/
+const addParameters = (str, parameters, cheerio) => {
+  if (parameters.utm) {
+    const html = cheerio.load(str)
+
+  } else {
+    return str
+  }
+}
+
 gulp.task('premailer', (done) => {
   // read the html file
   return fs.readFile('working/index.html', 'utf-8', (err, html) => {
@@ -124,5 +141,6 @@ gulp.task('build', gulp.series('css', 'premailer', 'txt'))
 gulp.task('serve', gulp.series('sass', gulp.series('sass', 'browserSync', 'watchSassAndHtml')))
 
 module.exports = {
-  replaceLinks
+  replaceLinks,
+  addParameters
 }
