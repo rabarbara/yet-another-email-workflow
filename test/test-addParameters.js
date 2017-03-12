@@ -1,5 +1,6 @@
 const assert = require('assert')
 const addParameters = require('../gulpfile').addParameters
+const createParameterString = require('../gulpfile').createParameterString
 const cheerioTest = require('cheerio')
 
 
@@ -8,13 +9,13 @@ describe('addParameters adds all utm parameters in an links object to all links 
     let basicString = 'string'
     let linksObject = {}
     assert.doesNotThrow(function () {
-      addParameters(basicString, linksObject, cheerioTest)
+      addParameters(basicString, createParameterString(linksObject), cheerioTest)
     }, Error, 'File is empty')
   })
   it('returns the same element if the links object is empty', function () {
     let basicString = '<a href="https://www.google.com"'
-    assert.equal(addParameters(basicString, {}, cheerioTest), basicString)
-    assert.equal(addParameters('', {}, cheerioTest), '')
+    assert.equal(addParameters(basicString, createParameterString({}), cheerioTest), basicString)
+    assert.equal(addParameters('', createParameterString({}), cheerioTest), '')
   })
   it('appends the parameters to the all links in the string', function () {
     let basicString = '<a href="https://www.google.com">Google</a> <a href="https://www.github.com">Github</a>'
@@ -24,7 +25,7 @@ describe('addParameters adds all utm parameters in an links object to all links 
         medium: 'medium'
       }
     }
-    assert.equal(addParameters(basicString, linksObject, cheerioTest), '<a href="https://www.google.com?utm_source=source&utm_medium=medium">Google</a> <a href="https://www.github.com?utm_source=source&utm_medium=medium">Github</a>')
+    assert.equal(addParameters(basicString, createParameterString(linksObject), cheerioTest), '<a href="https://www.google.com?utm_source=source&utm_medium=medium">Google</a> <a href="https://www.github.com?utm_source=source&utm_medium=medium">Github</a>')
   })
   it('appends only the elements that are not empty', function () {
     let basicString = '<a href="https://www.google.com">Google</a> <a href="https://www.github.com">Github</a>'
@@ -35,7 +36,7 @@ describe('addParameters adds all utm parameters in an links object to all links 
         name: ''
       }
     }
-    assert.equal(addParameters(basicString, linksObject, cheerioTest), '<a href="https://www.google.com?utm_source=source&utm_medium=medium">Google</a> <a href="https://www.github.com?utm_source=source&utm_medium=medium">Github</a>')
+    assert.equal(addParameters(basicString, createParameterString(linksObject), cheerioTest), '<a href="https://www.google.com?utm_source=source&utm_medium=medium">Google</a> <a href="https://www.github.com?utm_source=source&utm_medium=medium">Github</a>')
   })
   it('appends only strings or numbers, ignores other types of key values', function () {
     let basicString = '<a href="https://www.google.com">Google</a> <a href="https://www.github.com">Github</a>'
@@ -49,7 +50,7 @@ describe('addParameters adds all utm parameters in an links object to all links 
         }
       }
     }
-    assert.equal(addParameters(basicString, linksObject, cheerioTest),
+    assert.equal(addParameters(basicString, createParameterString(linksObject), cheerioTest),
       '<a href="https://www.google.com?utm_source=source&utm_medium=medium&utm_name=5">Google</a> <a href="https://www.github.com?utm_source=source&utm_medium=medium&utm_name=5">Github</a>')
   })
   it('adds only the valid utm keys, rejects the ones that do not match', function () {
@@ -65,7 +66,7 @@ describe('addParameters adds all utm parameters in an links object to all links 
         fake: 'fake'
       }
     }
-    assert.equal(addParameters(basicString, linksObject, cheerioTest),
+    assert.equal(addParameters(basicString, createParameterString(linksObject), cheerioTest),
       '<a href="https://www.google.com?utm_source=source&utm_medium=medium&utm_name=5">Google</a> <a href="https://www.github.com?utm_source=source&utm_medium=medium&utm_name=5">Github</a>')
   })
   it('adds only the valid utm keys, rejects the ones that do not match', function () {
@@ -79,7 +80,7 @@ describe('addParameters adds all utm parameters in an links object to all links 
         content: 'content'
       }
     }
-    assert.equal(addParameters(basicString, linksObject, cheerioTest),
+    assert.equal(addParameters(basicString, createParameterString(linksObject), cheerioTest),
       '<a href="https://www.google.com?utm_source=source&utm_medium=medium&utm_name=name&utm_term=term&utm_content=content">Google</a>')
   })
 
@@ -94,7 +95,7 @@ describe('addParameters adds all utm parameters in an links object to all links 
         content: 'content'
       }
     }
-    assert.equal(addParameters(basicString, linksObject, cheerioTest),
+    assert.equal(addParameters(basicString, createParameterString(linksObject), cheerioTest),
       '<a href="https://www.google.com?utm_source=source">Google</a> <a href="https://www.google.com?utm_source=source&utm_medium=medium&utm_name=name&utm_term=term&utm_content=content">Google</a>')
   })
   it('if all utm parameters are empty, add nothing', function () {
@@ -108,7 +109,21 @@ describe('addParameters adds all utm parameters in an links object to all links 
         content: ''
       }
     }
-    assert.equal(addParameters(basicString, linksObject, cheerioTest),
+    assert.equal(addParameters(basicString, createParameterString(linksObject), cheerioTest),
       '<a href="https://www.google.com?utm_source=source">Google</a> <a href="https://www.google.com">Google</a>')
+  })
+})
+
+describe('the links object can also contain custom urls under the namespace "custom', function () {
+  it('does not append anything if the custom namespace is empty', function () {
+    let basicString = '<a href="https://www.google.com?utm_source=source">Google</a> <a href="https://www.google.com">Google</a>'
+    let linksObject = {
+      utm: {
+
+      },
+      custom: {
+        myprefix: 'myprefix'
+      }
+    }
   })
 })

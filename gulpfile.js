@@ -15,15 +15,15 @@ const cheerio = require('cheerio')
 // Compile sass into CSS & auto-inject into browsers
 gulp.task('sass', () => {
   return gulp.src('working/scss/*.scss')
-      // plumber is used so that the watch task does not break when there is some wrong code
-      .pipe(plumber(function (error) {
-        gutil.beep()
-        console.log(error)
-        this.emit('end')
-      }))
-      .pipe(sass())
-      .pipe(gulp.dest('working/css'))
-      .pipe(browserSync.stream())
+    // plumber is used so that the watch task does not break when there is some wrong code
+    .pipe(plumber(function (error) {
+      gutil.beep()
+      console.log(error)
+      this.emit('end')
+    }))
+    .pipe(sass())
+    .pipe(gulp.dest('working/css'))
+    .pipe(browserSync.stream())
 })
 
 // Compile sass into CSS, remove unneeded CSS and dump it into the working folder for use in build process
@@ -77,44 +77,59 @@ const replaceLinks = (str, replacelist = {}) => {
   }
 }
 
+
+/**
+* creates a url parameter string from the links object given
+* @param {object}
+* @return {string}
+*/
 const createParameterString = (parameters) => {
-  return undefined
+  let availableUtmKeys = ['source', 'medium', 'name', 'term', 'content']
+  let paramsArr = []
+
+  // check if the parameters exist, otherwise don't bother
+  if (parameters.utm || parameters.custom) {
+    if (parameters.utm) {
+      for (const key of Object.keys(parameters.utm)) {
+      // don't add if it is empty or if it is not a string or number
+        if (parameters.utm[key] && (typeof parameters.utm[key] === 'string' || typeof parameters.utm[key] === 'number')) {
+          // only add the keys that are valid utm keys, ignore the ones that are not correct
+          // IGNORE OR ERROR?
+          if (availableUtmKeys.indexOf(key) !== -1) {
+            paramsArr.push(`utm_${key}=${parameters.utm[key]}`)
+          }
+        }
+      }
+    }
+  }
+
+  // joining all parameters in a string
+  // if there are no parameters, create an empty string
+  let paramsString = paramsArr.length !== 0 ? `?${paramsArr.join('&')}` : ''
+  return paramsString
 }
 
 /**
 * replaces each instance of a href atrribute in the first argument for the values provided in the second argument
 * @param {string}
-* @param {object}
+* @param {string}
 * @return {string}
 */
-const addParameters = (str, parameters, cheerio) => {
-  // check if parameters exist, otherwise do not add them
-  if (parameters.utm) {
-    const $ = cheerio.load(str, {decodeEntities: false})
-    let availableUtmKeys = ['source', 'medium', 'name', 'term', 'content']
-    let paramsArr = []
-    // loop through the object and add only the existing parameters
-    for (const key of Object.keys(parameters.utm)) {
-      // don't add if it is empty or if it is not a string or number
-      if (parameters.utm[key] && (typeof parameters.utm[key] === 'string' || typeof parameters.utm[key] === 'number')) {
-        // only add the keys that are valid utm keys, ignore the ones that are not correct
-        // IGNORE OR ERROR?
-        if (availableUtmKeys.indexOf(key) !== -1) {
-          paramsArr.push(`utm_${key}=${parameters.utm[key]}`)
-        }
-      }
-    }
-    // joining all parameters in a string
-    // if there are not parameters, create an empty string
-    let paramsString = paramsArr.length !== 0 ? `?${paramsArr.join('&')}` : ''
+const addParameters = (str, parameters = '', cheerio) => {
+  // check if the createParameterString returns a non-empty string
+  // to avoid all the work that is not needed
+  if (parameters) {
+    // load the cheerio instance for appending links
+    const $ = cheerio.load(str, { decodeEntities: false })
+    // create the parameter string that will be appended to each href
 
     // add the parameters to each href in the email
     $('a').each(function (i, el) {
       let origHref = $(this).attr('href')
       // if the split method returns an array that is longer than 1 element, it means that there is an existing parameter in it
-      // append the paramsString only if there is no existing parameters
+      // append the parameters only if there is no existing parameters
       if (origHref.split('?').length === 1) {
-        $(this).attr('href', origHref + paramsString)
+        $(this).attr('href', origHref + parameters)
       }
     })
     return $.html()
