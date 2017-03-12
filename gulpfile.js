@@ -84,12 +84,20 @@ const replaceLinks = (str, replacelist = {}) => {
 * @return {string}
 */
 const addParameters = (str, parameters, cheerio) => {
+  // check if parameters exist, otherwise do not add them
   if (parameters.utm) {
     const $ = cheerio.load(str, {decodeEntities: false})
+    let availableUtmKeys = ['source', 'medium', 'name', 'term', 'content']
     let paramsArr = []
+    // loop through the object and add only the existing parameters
     for (const key of Object.keys(parameters.utm)) {
-      if (parameters.utm[key]) {
-        paramsArr.push(`utm_${key}=${parameters.utm[key]}`)
+      // don't add if it is empty or if it is not a string or number
+      if (parameters.utm[key] && (typeof parameters.utm[key] === 'string' || typeof parameters.utm[key] === 'number')) {
+        // only add the keys that are valid utm keys, ignore the ones that are not correct
+        // IGNORE OR ERROR?
+        if (availableUtmKeys.indexOf(key) !== -1) {
+          paramsArr.push(`utm_${key}=${parameters.utm[key]}`)
+        }
       }
     }
     let paramsString = `?${paramsArr.join('&')}`
@@ -99,6 +107,7 @@ const addParameters = (str, parameters, cheerio) => {
     })
     return $.html()
   } else {
+    // if there is nothing present return as is
     return str
   }
 }

@@ -37,4 +37,49 @@ describe('addParameters adds all parameters in information.json to all links if 
     }
     assert.equal(addParameters(basicString, linksObject, cheerio), '<a href="https://www.google.com?utm_source=source&utm_medium=medium">Google</a> <a href="https://www.github.com?utm_source=source&utm_medium=medium">Github</a>')
   })
+  it('appends only strings or numbers, ignores other types of key values', function () {
+    let basicString = '<a href="https://www.google.com">Google</a> <a href="https://www.github.com">Github</a>'
+    let linksObject = {
+      utm: {
+        source: 'source',
+        medium: 'medium',
+        name: 5,
+        content: function () {
+          console.log('Faulty function')
+        }
+      }
+    }
+    assert.equal(addParameters(basicString, linksObject, cheerio),
+      '<a href="https://www.google.com?utm_source=source&utm_medium=medium&utm_name=5">Google</a> <a href="https://www.github.com?utm_source=source&utm_medium=medium&utm_name=5">Github</a>')
+  })
+  it('adds only the valid utm keys, rejects the ones that do not match', function () {
+    let basicString = '<a href="https://www.google.com">Google</a> <a href="https://www.github.com">Github</a>'
+    let linksObject = {
+      utm: {
+        source: 'source',
+        medium: 'medium',
+        name: 5,
+        content: function () {
+          console.log('Faulty function')
+        },
+        fake: 'fake'
+      }
+    }
+    assert.equal(addParameters(basicString, linksObject, cheerio),
+      '<a href="https://www.google.com?utm_source=source&utm_medium=medium&utm_name=5">Google</a> <a href="https://www.github.com?utm_source=source&utm_medium=medium&utm_name=5">Github</a>')
+  })
+  it('adds only the valid utm keys, rejects the ones that do not match', function () {
+    let basicString = '<a href="https://www.google.com">Google</a>'
+    let linksObject = {
+      utm: {
+        source: 'source',
+        medium: 'medium',
+        name: 'name',
+        term: 'term',
+        content: 'content'
+      }
+    }
+    assert.equal(addParameters(basicString, linksObject, cheerio),
+      '<a href="https://www.google.com?utm_source=source&utm_medium=medium&utm_name=name&utm_term=term&utm_content=content">Google</a>')
+  })
 })
