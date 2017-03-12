@@ -82,4 +82,19 @@ describe('addParameters adds all parameters in information.json to all links if 
     assert.equal(addParameters(basicString, linksObject, cheerio),
       '<a href="https://www.google.com?utm_source=source&utm_medium=medium&utm_name=name&utm_term=term&utm_content=content">Google</a>')
   })
+
+  it('if there are existing parameters it does not add anything', function () {
+    let basicString = '<a href="https://www.google.com?utm_source=source">Google</a> <a href="https://www.google.com">Google</a>'
+    let linksObject = {
+      utm: {
+        source: 'source',
+        medium: 'medium',
+        name: 'name',
+        term: 'term',
+        content: 'content'
+      }
+    }
+    assert.equal(addParameters(basicString, linksObject, cheerio),
+      '<a href="https://www.google.com?utm_source=source">Google</a> <a href="https://www.google.com?utm_source=source&utm_medium=medium&utm_name=name&utm_term=term&utm_content=content">Google</a>')
+  })
 })

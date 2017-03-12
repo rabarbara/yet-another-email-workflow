@@ -100,14 +100,21 @@ const addParameters = (str, parameters, cheerio) => {
         }
       }
     }
+    // joining all parameters in a string
     let paramsString = `?${paramsArr.join('&')}`
+
+    // add the parameters to each href in the email
     $('a').each(function (i, el) {
       let origHref = $(this).attr('href')
-      $(this).attr('href', origHref + paramsString)
+      // if the split method returns an array that is longer than 1 element, it means that there is an existing parameter in it
+      // append the paramsString only if there is no existing parameters
+      if (origHref.split('?').length === 1) {
+        $(this).attr('href', origHref + paramsString)
+      }
     })
     return $.html()
   } else {
-    // if there is nothing present return as is
+    // if there is nothing available, return as is
     return str
   }
 }
