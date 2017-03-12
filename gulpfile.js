@@ -8,6 +8,7 @@ const fs = require('fs')
 const juice = require('juice')
 const path = require('path')
 const information = require(path.join(__dirname, 'working/information.json'))
+const html2txt = require('gulp-html2txt')
 
 // Compile sass into CSS & auto-inject into browsers
 gulp.task('sass', () => {
@@ -94,6 +95,13 @@ gulp.task('premailer', (done) => {
   })
 })
 
+// convert html to txt
+gulp.task('txt', () => {
+  return gulp.src('build/index.html')
+  .pipe(html2txt())
+  .pipe(gulp.dest('build/'))
+})
+
 // start up browserSync
 gulp.task('browserSync', () => {
   browserSync.init({
@@ -112,7 +120,7 @@ gulp.task('watchSassAndHtml', () => {
   gulp.watch('working/scss/*.scss', gulp.series('reload'))
 })
 
-gulp.task('build', gulp.series('css', 'premailer'))
+gulp.task('build', gulp.series('css', 'premailer', 'txt'))
 gulp.task('serve', gulp.series('sass', gulp.series('sass', 'browserSync', 'watchSassAndHtml')))
 
 module.exports = {

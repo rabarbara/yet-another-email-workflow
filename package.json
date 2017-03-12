@@ -33,6 +33,7 @@
     "eslint-plugin-standard": "^2.0.1",
     "gulp": "github:gulpjs/gulp#4.0",
     "gulp-cli": "^1.2.2",
+    "gulp-html2txt": "^1.2.0",
     "gulp-plumber": "^1.1.0",
     "gulp-sass": "^3.1.0",
     "gulp-uncss": "^1.0.6",
