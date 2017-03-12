@@ -77,6 +77,10 @@ const replaceLinks = (str, replacelist = {}) => {
   }
 }
 
+const createParameterString = (parameters) => {
+  return undefined
+}
+
 /**
 * replaces each instance of a href atrribute in the first argument for the values provided in the second argument
 * @param {string}
@@ -170,5 +174,6 @@ gulp.task('serve', gulp.series('sass', gulp.series('sass', 'browserSync', 'watch
 
 module.exports = {
   replaceLinks,
-  addParameters
+  addParameters,
+  createParameterString
 }
