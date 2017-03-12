@@ -89,25 +89,29 @@ const createParameterString = (parameters) => {
 
   // check if the parameters exist, otherwise don't bother
   if (parameters.utm || parameters.custom) {
-    if (parameters.utm) {
-      for (const key of Object.keys(parameters.utm)) {
-      // don't add if it is empty or if it is not a string or number
-        if (parameters.utm[key] && (typeof parameters.utm[key] === 'string' || typeof parameters.utm[key] === 'number')) {
+    // loop through all the utm and custom keys
+    for (const paramKeys of Object.keys(parameters)) {
+      // loop through the inner keys of utm and custom
+      for (const key of Object.keys(parameters[paramKeys])) {
+        // don't add if it is empty or if it is not a string or number
+        if (parameters[paramKeys][key] && (typeof parameters[paramKeys][key] === 'string' || typeof parameters[paramKeys][key] === 'number')) {
           // only add the keys that are valid utm keys, ignore the ones that are not correct
           // IGNORE OR ERROR?
-          if (availableUtmKeys.indexOf(key) !== -1) {
-            paramsArr.push(`utm_${key}=${parameters.utm[key]}`)
+          if (paramKeys === 'utm' && availableUtmKeys.indexOf(key) !== -1) {
+            paramsArr.push(`utm_${key}=${parameters[paramKeys][key]}`)
+          } else if (paramKeys !== 'utm') { // if the keys are not utm, you are free to add them
+            paramsArr.push(`${key}=${parameters[paramKeys][key]}`)
           }
         }
       }
     }
   }
-
-  // joining all parameters in a string
+   // joining all parameters in a string
   // if there are no parameters, create an empty string
   let paramsString = paramsArr.length !== 0 ? `?${paramsArr.join('&')}` : ''
   return paramsString
 }
+
 
 /**
 * replaces each instance of a href atrribute in the first argument for the values provided in the second argument
