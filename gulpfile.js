@@ -85,8 +85,19 @@ const replaceLinks = (str, replacelist = {}) => {
 */
 const addParameters = (str, parameters, cheerio) => {
   if (parameters.utm) {
-    const html = cheerio.load(str)
-
+    const $ = cheerio.load(str, {decodeEntities: false})
+    let paramsArr = []
+    for (const key of Object.keys(parameters.utm)) {
+      if (parameters.utm[key]) {
+        paramsArr.push(`utm_${key}=${parameters.utm[key]}`)
+      }
+    }
+    let paramsString = `?${paramsArr.join('&')}`
+    $('a').each(function (i, el) {
+      let origHref = $(this).attr('href')
+      $(this).attr('href', origHref + paramsString)
+    })
+    return $.html()
   } else {
     return str
   }

@@ -20,14 +20,21 @@ describe('addParameters adds all parameters in information.json to all links if 
     let basicString = '<a href="https://www.google.com">Google</a> <a href="https://www.github.com">Github</a>'
     let linksObject = {
       utm: {
-        source: 'source'
+        source: 'source',
+        medium: 'medium'
       }
     }
-    assert.equal(addParameters(basicString, linksObject, cheerio), '<a href="https://www.google.com?utm_source=source">Google</a> <a href="https://www.github.com?utm_source=source">Github</a>')
+    assert.equal(addParameters(basicString, linksObject, cheerio), '<a href="https://www.google.com?utm_source=source&utm_medium=medium">Google</a> <a href="https://www.github.com?utm_source=source&utm_medium=medium">Github</a>')
   })
-  // it('appends the url parameters to all links', function () {
-  //   let basicString = '<a href="http://www.google.com"'
-  //   let linksObject = {}
-  //   assert.equal(addParameters(basicString, linksObject), '<a href="http://www.google.com"')
-  // })
+  it('appends only the elements that are not empty', function () {
+    let basicString = '<a href="https://www.google.com">Google</a> <a href="https://www.github.com">Github</a>'
+    let linksObject = {
+      utm: {
+        source: 'source',
+        medium: 'medium',
+        name: ''
+      }
+    }
+    assert.equal(addParameters(basicString, linksObject, cheerio), '<a href="https://www.google.com?utm_source=source&utm_medium=medium">Google</a> <a href="https://www.github.com?utm_source=source&utm_medium=medium">Github</a>')
+  })
 })
