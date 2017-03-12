@@ -101,7 +101,8 @@ const addParameters = (str, parameters, cheerio) => {
       }
     }
     // joining all parameters in a string
-    let paramsString = `?${paramsArr.join('&')}`
+    // if there are not parameters, create an empty string
+    let paramsString = paramsArr.length !== 0 ? `?${paramsArr.join('&')}` : ''
 
     // add the parameters to each href in the email
     $('a').each(function (i, el) {
