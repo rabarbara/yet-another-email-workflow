@@ -13,7 +13,7 @@ const cheerio = require('cheerio')
 
 
 // Compile sass into CSS & auto-inject into browsers
-gulp.task('sass', () => {
+gulp.task('sass', (done) => {
   return gulp.src('working/scss/*.scss')
     // plumber is used so that the watch task does not break when there is some wrong code
     .pipe(plumber(function (error) {
@@ -174,25 +174,27 @@ gulp.task('txt', () => {
 })
 
 // start up browserSync
-gulp.task('browserSync', () => {
+gulp.task('browserSync', (done) => {
   browserSync.init({
     server: 'working'
   })
+  done()
 })
 
 // reload browserSync
-gulp.task('reload', () => {
+gulp.task('reload', (done) => {
   browserSync.reload()
+  done()
 })
 
 // watch scss and html files for changes
 gulp.task('watchSassAndHtml', () => {
-  gulp.watch('working/scss/*.scss', gulp.series('sass', 'reload'))
-  gulp.watch('working/scss/*.scss', gulp.series('reload'))
+  gulp.watch('working/scss/*.scss', gulp.parallel('sass', 'reload'))
+  gulp.watch('working/*.html', gulp.series('reload'))
 })
 
 gulp.task('build', gulp.series('css', 'premailer', 'txt'))
-gulp.task('serve', gulp.series('sass', gulp.series('sass', 'browserSync', 'watchSassAndHtml')))
+gulp.task('serve', gulp.series('sass', gulp.parallel('browserSync', 'watchSassAndHtml')))
 
 module.exports = {
   replaceLinks,
