@@ -106,7 +106,7 @@ const createParameterString = (parameters) => {
       }
     }
   }
-   // joining all parameters in a string
+  // joining all parameters in a string
   // if there are no parameters, create an empty string
   let paramsString = paramsArr.length !== 0 ? `?${paramsArr.join('&')}` : ''
   return paramsString
@@ -151,14 +151,16 @@ gulp.task('premailer', (done) => {
     // read the css file
     fs.readFile('working/css/styles.css', 'utf-8', (err, css) => {
       if (err) throw (err)
-      // pass both the html and css string into juice. This is done because of path issues in the html
-      //  => juice does not find the css because of the relative path import in the html file
-      // we also need to remove the link to css to not cause issues in email clients
-      let email = addParameters(replaceLinks(html, information.links), createParameterString(information.parameters), cheerio)
-      const removedCssLink = juice.inlineContent(email, css).replace('<link rel="stylesheet" href="../css/styles.css">', '')
-      fs.writeFile('build/index.html', removedCssLink, (err) => {
+      // replace the file path in the html file so that juice can find it, looking from the root of the project
+      let email = html.replace('<link rel="stylesheet" href="css/styles.css">', '<link rel="stylesheet" href="working/css/styles.css">')
+      juice.juiceResources(email, { preserveMediaQueries: true, applyStyleTags: true }, (err, html) => {
         if (err) throw (err)
-        done()
+        // replace the url placeholder and add url parameters
+        let email = addParameters(replaceLinks(html, information.links), createParameterString(information.parameters), cheerio)
+        fs.writeFile('build/index.html', email, (err) => {
+          if (err) throw (err)
+          done()
+        })
       })
     })
   })
@@ -167,8 +169,8 @@ gulp.task('premailer', (done) => {
 // convert html to txt
 gulp.task('txt', () => {
   return gulp.src('build/index.html')
-  .pipe(html2txt())
-  .pipe(gulp.dest('build/'))
+    .pipe(html2txt())
+    .pipe(gulp.dest('build/'))
 })
 
 // start up browserSync
