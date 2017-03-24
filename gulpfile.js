@@ -144,24 +144,35 @@ const addParameters = (str, parameters = '', cheerio) => {
   }
 }
 
+/**
+* replaces each instance of a href atrribute in the first argument for the values provided in the second argument
+* @param {string}
+* @param {string}
+* @return {string}
+*/
+const createHtml = (html, cssPath, addParameters, createParameterString, cheerio) => {
+  return new Promise((resolve, reject) => {
+    // replace the file path in the html file so that juice can find it, looking from the root of the project
+    let email = html.replace('<link rel="stylesheet" href="css/styles.css">', `<link rel="stylesheet" href="${cssPath}">`)
+    juice.juiceResources(email, { preserveMediaQueries: true, applyStyleTags: true }, (err, html) => {
+      if (err) reject(err)
+      // replace the url placeholder and add url parameters
+      resolve(addParameters(replaceLinks(html, information.links), createParameterString(information.parameters), cheerio))
+    })
+  })
+}
+
 gulp.task('premailer', (done) => {
-  // read the html file
-  return fs.readFile('working/index.html', 'utf-8', (err, html) => {
-    if (err) throw (err)
-    // read the css file
-    fs.readFile('working/css/styles.css', 'utf-8', (err, css) => {
-      if (err) throw (err)
-      // replace the file path in the html file so that juice can find it, looking from the root of the project
-      let email = html.replace('<link rel="stylesheet" href="css/styles.css">', '<link rel="stylesheet" href="working/css/styles.css">')
-      juice.juiceResources(email, { preserveMediaQueries: true, applyStyleTags: true }, (err, html) => {
-        if (err) throw (err)
-        // replace the url placeholder and add url parameters
-        let email = addParameters(replaceLinks(html, information.links), createParameterString(information.parameters), cheerio)
-        fs.writeFile('build/index.html', email, (err) => {
-          if (err) throw (err)
-          done()
-        })
+  fs.readFile('working/index.html', 'utf-8', (err, html) => {
+    if (err) throw err
+    createHtml(html, 'working/css/styles.css', addParameters, createParameterString, cheerio).then(html => {
+      fs.writeFile('build/index.html', html, (err) => {
+        if (err) throw err
+        done()
       })
+    }).catch(e => {
+      done()
+      throw e
     })
   })
 })
@@ -199,5 +210,6 @@ gulp.task('serve', gulp.series('sass', gulp.parallel('browserSync', 'watchSassAn
 module.exports = {
   replaceLinks,
   addParameters,
-  createParameterString
+  createParameterString,
+  createHtml
 }
