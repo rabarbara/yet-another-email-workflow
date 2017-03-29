@@ -1,8 +1,10 @@
 {
-  "subject": "",
-  "senderName": "",
-  "senderEmail":"",
+  "subject": "Test",
+  "senderName": "Test",
+  "senderEmail":"example@example.org",
   "replyTo": [],
+  "cc": [],
+  "recipient": "stavanja@gmail.com",
   "links": {
     "links go here":"https://www.google.com"
   },
