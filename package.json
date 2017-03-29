@@ -8,7 +8,8 @@
     "watch": "gulp serve",
     "css": "gulp css",
     "build": "gulp build",
-    "version": "gulp --v"
+    "version": "gulp --v",
+    "email": "gulp sendmail"
   },
   "repository": {
     "type": "git",
@@ -40,7 +41,7 @@
     "gulp-uncss": "^1.0.6",
     "gulp-util": "^3.0.8",
     "juice": "^4.0.2",
-    "mailgun-js": "^0.8.2",
+    "mailgun.js": "^2.0.1",
     "mocha": "^3.2.0",
     "node-sass": "^4.5.0",
     "premailer-gulp-juice": "^0.1.7",
