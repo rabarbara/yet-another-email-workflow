@@ -10,6 +10,7 @@ const path = require('path')
 const information = require(path.join(__dirname, 'working/information.json'))
 const html2txt = require('gulp-html2txt')
 const cheerio = require('cheerio')
+const mailgun = require('mailgun.js')
 
 
 // Compile sass into CSS & auto-inject into browsers
@@ -207,9 +208,60 @@ gulp.task('watchSassAndHtml', () => {
 gulp.task('build', gulp.series('css', 'premailer', 'txt'))
 gulp.task('serve', gulp.series('sass', gulp.parallel('browserSync', 'watchSassAndHtml')))
 
+const sendmail = (done) => {
+  const credentials = require('./credentials.json')
+  const mg = mailgun.client({ username: 'api', key: process.env.MAILGUN_API_KEY || credentials.mailgun.key })
+  const information = require('./working/information.json')
+  const html = new Promise((resolve, reject) => {
+    fs.readFile('./build/index.html', 'utf-8', (err, data) => {
+      if (err) throw Error(err)
+      if (data.length > 0) {
+        resolve(data)
+      } else {
+        reject('Empty file')
+      }
+    })
+  })
+  const text = new Promise((resolve, reject) => {
+    fs.readFile('./build/index.txt', 'utf-8', (err, data) => {
+      if (err) throw Error(err)
+      if (data.length > 0) {
+        resolve(data)
+      } else {
+        reject('Empty file')
+      }
+    })
+  })
+
+  Promise.all([html, text]).then(emails => {
+    mg.messages.create(credentials.mailgun.domain, {
+      from: `${information.senderName} ${information.senderEmail}`,
+      to: information.recipient,
+      subject: information.subject,
+      text: emails[1],
+      html: emails[0]
+    })
+      .then(msg => {
+        console.log(msg)
+        done()
+      }
+      ) // logs response data
+      .catch(err => {
+        console.log(err)
+        done()
+      }) // logs any error
+  }).catch(err => {
+    console.log(err)
+    done()
+  })
+}
+
+gulp.task('sendmail', gulp.series('css', 'premailer', 'txt', sendmail))
+
 module.exports = {
   replaceLinks,
   addParameters,
   createParameterString,
-  createHtml
+  createHtml,
+  sendmail
 }
