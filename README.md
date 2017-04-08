@@ -1,3 +1,5 @@
+![Yet another email workflow header](https://github.com/rabarbara/yet-another-email-workflow/blob/master/working/img/yaew.png "Yet another email workflwow")
+
 # yet-another-email-workflow
 Yet another email workflow to speed up email development
 
