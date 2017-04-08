@@ -9,7 +9,8 @@
     "css": "gulp css",
     "build": "gulp build",
     "version": "gulp --v",
-    "email": "gulp sendmail"
+    "email": "gulp sendmail",
+    "img": "gulp img"
   },
   "repository": {
     "type": "git",
@@ -36,6 +37,7 @@
     "gulp": "github:gulpjs/gulp#4.0",
     "gulp-cli": "^1.2.2",
     "gulp-html2txt": "^1.2.0",
+    "gulp-imagemin": "^3.2.0",
     "gulp-plumber": "^1.1.0",
     "gulp-sass": "^3.1.0",
     "gulp-uncss": "^1.0.6",
@@ -45,6 +47,7 @@
     "mocha": "^3.2.0",
     "node-sass": "^4.5.0",
     "premailer-gulp-juice": "^0.1.7",
-    "sinon": "^1.17.7"
+    "sinon": "^1.17.7",
+    "tinify": "^1.5.0"
   }
 }

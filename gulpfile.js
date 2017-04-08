@@ -11,7 +11,7 @@ const information = require(path.join(__dirname, 'working/information.json'))
 const html2txt = require('gulp-html2txt')
 const cheerio = require('cheerio')
 const mailgun = require('mailgun.js')
-
+const imagemin = require('gulp-imagemin')
 
 // Compile sass into CSS & auto-inject into browsers
 gulp.task('sass', (done) => {
@@ -205,7 +205,7 @@ gulp.task('watchSassAndHtml', () => {
   gulp.watch('working/*.html', gulp.series('reload'))
 })
 
-gulp.task('build', gulp.series('css', 'premailer', 'txt'))
+gulp.task('build', gulp.series('css', 'premailer', 'txt', 'img'))
 gulp.task('serve', gulp.series('sass', gulp.parallel('browserSync', 'watchSassAndHtml')))
 
 const sendmail = (done) => {
@@ -255,6 +255,12 @@ const sendmail = (done) => {
     done()
   })
 }
+
+gulp.task('img', () => {
+  return gulp.src('working/img/*')
+    .pipe(imagemin())
+    .pipe(gulp.dest('build/img'))
+})
 
 gulp.task('sendmail', gulp.series('css', 'premailer', 'txt', sendmail))
 
