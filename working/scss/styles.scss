@@ -1,1 +1,88 @@
 @import 'ink';
+
+$main: rgb(220,100,0);
+$iso: 40;
+$gray: lighten(grayscale($main), $iso);
+$background: darken(white, 1);
+
+table.body {
+    background-color: $gray;
+}
+
+.row {
+    background: $background;
+}
+
+h1, h2, h3, h4, h5 {
+    color: $main;
+    padding-top:10px;
+}
+
+h1 {
+    font-weight: bold;
+}
+
+h2 {
+    line-height: 1;
+
+}
+
+p.description {
+    font-weight: bold;
+    line-height: 1;
+    font-size: 20px;
+    color: $main;
+    margin-bottom: 1.2em;
+}
+
+body td {
+    font-family: 'Tahoma', arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+body p {
+    font-family: 'Tahoma', arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+pre {
+    background: lighten($gray,10);
+    padding: 10px;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+code {
+    background: lighten($main, $iso);
+    padding: 1px;
+}
+
+.footer .wrapper {
+    background: darken($gray, 5);
+}
+
+.yaew {
+    font-size: 20px;
+    line-height: 2;
+    letter-spacing: 3px;
+    font-weight: bold;
+    text-align: center;
+}
+.speeding {
+    // line-height: 2;
+    font-size: 13px;
+    vertical-align: bottom;
+    height: 35px;
+    text-align: center;
+}
+
+.copyright {
+    font-size: 10px;
+    height: 35px;
+    vertical-align: bottom;
+    text-align: center;
+}
