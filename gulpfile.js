@@ -205,6 +205,13 @@ gulp.task('watchSassAndHtml', () => {
   gulp.watch('working/*.html', gulp.series('reload'))
 })
 
+// compress images
+gulp.task('img', (done) => {
+  return gulp.src('working/img/*')
+    .pipe(imagemin())
+    .pipe(gulp.dest('build/img'))
+})
+
 gulp.task('build', gulp.series('css', 'premailer', 'txt', 'img'))
 gulp.task('serve', gulp.series('sass', gulp.parallel('browserSync', 'watchSassAndHtml')))
 
@@ -256,11 +263,7 @@ const sendmail = (done) => {
   })
 }
 
-gulp.task('img', () => {
-  return gulp.src('working/img/*')
-    .pipe(imagemin())
-    .pipe(gulp.dest('build/img'))
-})
+
 
 gulp.task('sendmail', gulp.series('css', 'premailer', 'txt', sendmail))
 
