@@ -1,22 +1,187 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-  <html xmlns="http://www.w3.org/1999/xhtml">
-    <head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-      <meta name="viewport" content="width=device-width"/>
-      <link rel="stylesheet" href="css/styles.css">
+<html xmlns="http://www.w3.org/1999/xhtml">
 
-    </head>
-    <body>
-      <table class="body">
-        <tr>
-          <td class="center" align="center" valign="top">
-            <center>
-            <!-- Email Content -->
-            <a href="#{links go here}"></a>
-            </center>
-          </td>
-        </tr>
-      </table>
-    </body>
-  </html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width" />
+  <link rel="stylesheet" href="css/styles.css">
+
+</head>
+
+<body>
+  <table class="body">
+    <tr>
+      <td class="center" align="center" valign="top">
+        <center>
+          <!-- Email Content -->
+          <table class="container">
+            <tr>
+              <td>
+                <table class="row">
+                  <tr>
+                    <td class="wrapper last">
+                      <table class="twelve columns">
+                        <tr>
+                          <td>
+                            <img src="img/yaew.png" alt="Yet another email workflow" width="580">
+                          </td>
+                          <td class="expander"></td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+                <table class="row">
+                  <tr>
+                    <td class="wrapper last">
+                      <table class="twelve columns">
+                        <tr>
+                          <td class="text-pad">
+                            <h1>yet-another-email-workflow</h1>
+                            <p class="description">A new email workflow to speed up email development</p>
+
+                            <p>Designing HTML emails can be a very tiresome process, especially if you are doing all the coding
+                              manually. You have to inline all the styles, create tables and basically <strike>party</strike> code like
+                              it's 1999. This email workflow aims to take a little bit of that burden of your chest.</p>
+                            <p>It enables you to work fast and focus on the task that is the most important: content and placement.</p>
+
+
+                            <h2>Features</h2>
+
+                            <ol>
+                              <li>Browser reload on change.</li>
+                              <li>Scss stylesheets (included is the ink.css file for easier creation of responsive emails)</li>
+                              <li>HTML and text versions of the email on build</li>
+                              <li>Simple link replacement for a less error prone link creation</li>
+                              <li>Automatic Google UTM url parameter addition to links</li>
+                              <li>Test emails sent to chosen address </li>
+                              <li>Automatic image optimization</li>
+                            </ol>
+
+
+                            <h2>Requirements</h2>
+
+                            <ol>
+                              <li>Node (>6)</li>
+                              <li>Mailgun (optional)</li>
+                            </ol>
+
+
+                            <h2>Install</h2>
+
+                            <ol>
+                              <li>Clone this repository.</li>
+                              <li>Cd into directory</li>
+                              <li><code>npm install</code></li>
+                            </ol>
+
+
+                            <h2>Getting started</h2>
+
+                            <p>Your most important folder where you will do the majority of work is the working folder.</p>
+                            <p>There you will find an HTML file, an scss folder and a file called <code>information.json</code>.</p>
+                            <p>The HTML file will be your starting file to construct your email. The scss folder is for the
+                              stylesheets.</p>
+                            <p>The <code>information.json</code> file should contain all the meta information about your email, such as
+                              the subject, sender, url parameters, urls and so on.</p>
+                            <p>All your HTML content goes into the <code>working\index.html</code> file.</p>
+                            <h3>Gulp and NPM</h3>
+
+                            <p>To avoid installing global packages, all gulp tasks are run under npm scripts.</p>
+
+                            <h3>Development</h3>
+
+                            <p>Run <code>npm run watch</code>. The development server will start and a browser window will open.</p>
+
+                            <p>The two files in the working folder you should edit are the <code>index.html</code> and the <code>scss\styles.scss</code>.
+                              You should also fill out the information in <code>information.json</code>.</p>
+
+                            <h4>Information.json</h4>
+
+                            <p>Here you input all the required data. If you do not wish to use the automatic url insertion feature
+                              or the url parameter appending feature, leave the links and the parameters section as is.</p>
+
+                            <p class="bold">Example information.json</p>
+
+                            <pre>
+{
+    "subject": "My favourite email workflow",
+    "senderName": "John Doe",
+    "senderEmail":"jd@john-doe.org",
+    "replyTo": ["jane.doe@john-doe.org"],
+    "links": {
+      "headerLink":"https://www.john-doe.org/header"
+    },
+    "parameters": {
+      "utm": {
+        "source": "source",
+        "medium": "email",
+        "name": "campaignName",
+        "term": "email,workflow",
+        "content": "email-about-the-content"
+      },
+    "custom": {
+        "jhdp": "a-custom-john-doe-parameter"
+      }
+    }
+  }
+
+  </pre>
+
+                            <h2>Build</h2>
+
+                            <p>When you wish to create the complete email, run <code>npm run build</code>. This will inline all the css,
+                              replace all urls and create a nice txt version of the html as well.</p>
+                          </td>
+                          <td class="expander"></td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+                   <table class="row footer">
+                  <tr>
+                    <td class="wrapper">
+                      <table class="three columns">
+                        <tr>
+                          <td class="text-pad yaew">
+                            ✉YAEW
+                          </td>
+                          <td class="expander"></td>
+                        </tr>
+                      </table>
+                    </td>
+                    <td class="wrapper">
+                      <table class="five columns">
+                        <tr>
+                          <td class="text-pad speeding">
+
+                          </td>
+                          <td class="expander"></td>
+                        </tr>
+                      </table>
+                    </td>
+                    <td class="wrapper last">
+                      <table class="four columns">
+                        <tr>
+                          <td class="text-pad copyright">
+                      © Matej Stavanja, 2017
+                          </td>
+                          <td class="expander"></td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+
+        </center>
+      </td>
+    </tr>
+  </table>
+</body>
+
+</html>
