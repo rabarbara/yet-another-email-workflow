@@ -154,7 +154,8 @@ const addParameters = (str, parameters = '', cheerio) => {
 const createHtml = (html, cssPath, addParameters, createParameterString, cheerio) => {
   return new Promise((resolve, reject) => {
     // replace the file path in the html file so that juice can find it, looking from the root of the project
-    let email = html.replace('<link rel="stylesheet" href="css/styles.css">', `<link rel="stylesheet" href="${cssPath}">`)
+    // replace the path for images since juice needs all files to be present
+    let email = html.replace('<link rel="stylesheet" href="css/styles.css">', `<link rel="stylesheet" href="${cssPath}">`).replace('img/', 'working/img/')
     juice.juiceResources(email, { preserveMediaQueries: true, applyStyleTags: true }, (err, html) => {
       if (err) reject(err)
       // replace the url placeholder and add url parameters
@@ -167,7 +168,7 @@ gulp.task('premailer', (done) => {
   fs.readFile('working/index.html', 'utf-8', (err, html) => {
     if (err) throw err
     createHtml(html, 'working/css/styles.css', addParameters, createParameterString, cheerio).then(html => {
-      fs.writeFile('build/index.html', html, (err) => {
+      fs.writeFile('build/index.html', html.replace('working/img/', 'img/'), (err) => {
         if (err) throw err
         done()
       })
@@ -241,12 +242,14 @@ const sendmail = (done) => {
   })
 
   Promise.all([html, text]).then(emails => {
+    console.log(emails[1])
     mg.messages.create(credentials.mailgun.domain, {
       from: `${information.senderName} ${information.senderEmail}`,
       to: information.recipient,
       subject: information.subject,
       text: emails[1],
       html: emails[0]
+
     })
       .then(msg => {
         console.log(msg)
@@ -257,6 +260,7 @@ const sendmail = (done) => {
         console.log(err)
         done()
       }) // logs any error
+    done()
   }).catch(err => {
     console.log(err)
     done()
@@ -265,7 +269,7 @@ const sendmail = (done) => {
 
 
 
-gulp.task('sendmail', gulp.series('css', 'premailer', 'txt', sendmail))
+gulp.task('email', gulp.series('css', 'premailer', 'txt', sendmail))
 
 module.exports = {
   replaceLinks,
