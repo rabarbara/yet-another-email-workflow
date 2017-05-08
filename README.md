@@ -5,11 +5,8 @@ Yet another email workflow to speed up email development
 
 Designing HTML emails can be a very tiresome process, especially if you are doing all the coding manually. You have to inline all the styles, create tables and basically ~~party~~ code like it's 1999. This email workflow aims to take a little bit of that burden of your chest.
 
-It enables you to work fast and focus on the task that is the most important: content and placement.
+It enables you to work fast and focus on the most important task: content and placement.
 
-### IMPORTANT
-
-This project is still under development. Currently, only the `watch` and `build` commands are usable.
 
 ## Features
 
