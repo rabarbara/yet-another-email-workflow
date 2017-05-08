@@ -9,7 +9,7 @@
     "css": "gulp css",
     "build": "gulp build",
     "version": "gulp --v",
-    "email": "gulp sendmail",
+    "email": "gulp email",
     "img": "gulp img"
   },
   "repository": {
