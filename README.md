@@ -15,8 +15,8 @@ It enables you to work fast and focus on the most important task: content and pl
 3. HTML and text versions of the email on build
 4. Simple link replacement for a less error prone link creation
 5. Automatic Google UTM url parameter addition to links
-6. Test emails sent to chosen address (upcoming)
-7. Automatic image optimization (upcoming)
+6. Test emails sent to chosen address
+7. Automatic image optimization
 
 
 ## Requirements
