@@ -282,8 +282,8 @@ const sendmail = (done) => {
       from: `${information.senderName} ${information.senderEmail}`,
       to: information.recipient,
       subject: information.subject,
-      text: html,
-      html: text,
+      text: text,
+      html: html,
       inline: images,
       attachment: attachments
     })
