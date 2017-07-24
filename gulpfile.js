@@ -251,24 +251,27 @@ const sendmail = (done) => {
     })
   })
   const images = new Promise((resolve, reject) => {
-    fs.readdir('./working/img/', (err, files) => {
+    // read the path to the images and return a readStream for each file
+    fs.readdir(path.join(__dirname, 'working', 'img'), (err, files) => {
       console.log(files)
       if (err) reject(err)
       const streamOfImages = files.map(img => {
-        return fs.createReadStream('./working/img/' + img)
+        return fs.createReadStream(path.join(__dirname, 'working', 'img', img))
       })
       resolve(streamOfImages)
     })
   })
   const attachments = new Promise((resolve, reject) => {
-    fs.readdir('./working/img/', (err, files) => {
+    // read the path to the attachments and return a readStream for each file
+    fs.readdir(path.join(__dirname, 'working', 'attachments'), (err, files) => {
       if (err) throw Error(err)
       const streamOfFiles = files
       .filter(file => {
+        // .gitkeep should not be sent
         return file !== '.gitkeep'
       })
       .map(file => {
-        return fs.createReadStream('./working/img/' + file)
+        return fs.createReadStream(path.join(__dirname, 'working', 'attachments', file))
       })
       resolve(streamOfFiles)
     })
