@@ -8,6 +8,7 @@
     "watch": "gulp serve",
     "css": "gulp css",
     "build": "gulp build",
+    "inxmail": "gulp inxmail",
     "version": "gulp --v",
     "email": "gulp email",
     "img": "gulp img"
