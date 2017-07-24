@@ -236,7 +236,8 @@ const sendmail = (done) => {
     fs.readFile('./build/index.html', 'utf-8', (err, data) => {
       if (err) throw Error(err)
       if (data.length > 0) {
-        resolve(data)
+        let newData = data.replace(/img\/(.*?)"/g, 'cid:$1')
+        resolve(newData)
       } else {
         reject('Empty file')
       }
