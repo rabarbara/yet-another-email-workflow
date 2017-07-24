@@ -3,7 +3,6 @@ const browserSync = require('browser-sync').create()
 const sass = require('gulp-sass')
 const plumber = require('gulp-plumber')
 const gutil = require('gulp-util')
-const uncss = require('gulp-uncss')
 const fs = require('fs')
 const juice = require('juice')
 const path = require('path')
@@ -12,6 +11,8 @@ const html2txt = require('gulp-html2txt')
 const cheerio = require('cheerio')
 const mailgun = require('mailgun.js')
 const imagemin = require('gulp-imagemin')
+const postcss = require('gulp-postcss')
+const uncss = require('postcss-uncss')
 
 // Compile sass into CSS & auto-inject into browsers
 gulp.task('sass', (done) => {
@@ -30,6 +31,11 @@ gulp.task('sass', (done) => {
 // Compile sass into CSS, remove unneeded CSS and dump it into the working folder for use in build process
 // it is not neccessary to create a build CSS file just for the purpose of building the final email
 gulp.task('css', () => {
+  var plugins = [
+    uncss({
+      html: ['working/index.html']
+    })
+  ]
   return gulp.src('working/scss/*.scss')
     .pipe(plumber(function (error) {
       gutil.beep()
@@ -37,9 +43,7 @@ gulp.task('css', () => {
       this.emit('end')
     }))
     .pipe(sass())
-    .pipe(uncss({
-      html: ['working/index.html']
-    }))
+    .pipe(postcss(plugins))
     .pipe(gulp.dest('working/css'))
 })
 
@@ -168,13 +172,23 @@ gulp.task('premailer', (done) => {
   fs.readFile('working/index.html', 'utf-8', (err, html) => {
     if (err) throw err
     createHtml(html, 'working/css/styles.css', addParameters, createParameterString, cheerio).then(html => {
-      fs.writeFile('build/index.html', html.replace('working/img/', 'img/'), (err) => {
-        if (err) throw err
-        done()
+      fs.writeFile('build/index.html', html.replace('working/img/', 'img/'), 'utf8', err => {
+        if (err) {
+          if (err.code === 'ENOENT') {
+            fs.mkdir('build', err => {
+              if (err) console.log(err)
+              fs.writeFile('build/index.html', html.replace('working/img/', 'img/'), 'utf8', err => {
+                if (err) console.log(err)
+                done()
+              })
+            })
+          }
+        } else {
+          done()
+        }
       })
     }).catch(e => {
-      done()
-      throw e
+      console.log(e)
     })
   })
 })
@@ -213,8 +227,7 @@ gulp.task('img', (done) => {
     .pipe(gulp.dest('build/img'))
 })
 
-gulp.task('build', gulp.series('css', 'premailer', 'txt', 'img'))
-gulp.task('serve', gulp.series('sass', gulp.parallel('browserSync', 'watchSassAndHtml')))
+
 
 const sendmail = (done) => {
   const credentials = require('./credentials.json')
@@ -249,7 +262,6 @@ const sendmail = (done) => {
       subject: information.subject,
       text: emails[1],
       html: emails[0]
-
     })
       .then(msg => {
         console.log(msg)
@@ -267,9 +279,10 @@ const sendmail = (done) => {
   })
 }
 
-
-
 gulp.task('email', gulp.series('css', 'premailer', 'txt', sendmail))
+gulp.task('build', gulp.series('css', 'premailer', 'txt', 'img'))
+gulp.task('serve', gulp.series('sass', gulp.parallel('browserSync', 'watchSassAndHtml')))
+
 
 module.exports = {
   replaceLinks,
