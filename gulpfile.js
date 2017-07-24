@@ -234,7 +234,6 @@ const sendmail = (done) => {
       if (err) throw Error(err)
       if (data.length > 0) {
         let newData = data.replace(/img\/(.*?)"/gi, 'cid:$1"')
-        console.log(newData)
         resolve(newData)
       } else {
         reject('Empty file')
@@ -251,16 +250,39 @@ const sendmail = (done) => {
       }
     })
   })
-  const images = fs.createReadStream(path.join(__dirname, 'working', 'img', 'yaew.png'))
-  Promise.all([html, text]).then(emails => {
-    console.log(emails[1])
+  const images = new Promise((resolve, reject) => {
+    fs.readdir('./working/img/', (err, files) => {
+      console.log(files)
+      if (err) reject(err)
+      const streamOfImages = files.map(img => {
+        return fs.createReadStream('./working/img/' + img)
+      })
+      resolve(streamOfImages)
+    })
+  })
+  const attachments = new Promise((resolve, reject) => {
+    fs.readdir('./working/img/', (err, files) => {
+      if (err) throw Error(err)
+      const streamOfFiles = files
+      .filter(file => {
+        return file !== '.gitkeep'
+      })
+      .map(file => {
+        return fs.createReadStream('./working/img/' + file)
+      })
+      resolve(streamOfFiles)
+    })
+  })
+  Promise.all([html, text, images, attachments]).then(emails => {
+    let [html, text, images, attachments] = emails
     mg.messages.create(credentials.mailgun.domain, {
       from: `${information.senderName} ${information.senderEmail}`,
       to: information.recipient,
       subject: information.subject,
-      text: emails[1],
-      html: emails[0],
-      inline: [images]
+      text: html,
+      html: text,
+      inline: images,
+      attachment: attachments
     })
       .then(msg => {
         console.log(msg)
