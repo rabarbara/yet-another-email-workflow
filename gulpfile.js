@@ -63,7 +63,7 @@ const replaceLinks = (str, replacelist = {}, customUrl = '') => {
       let replacestring = new RegExp(`#{${key}}`, 'gi')
       let linkWithParameters = `${replacelist[key]}${createParameterString(information.parameters)}`
       if (customUrl) {
-        let url = customUrl.replace(/(#{url})/g, linkWithParameters)
+        let url = customUrl.replace(/(#{url})/g, linkWithParameters).replace(/(#{report})/g, key)
         html = html.replace(replacestring, url)
       } else {
         html = html.replace(replacestring, linkWithParameters)
