@@ -61,11 +61,12 @@ const replaceLinks = (str, replacelist = {}, customUrl = '') => {
   if (Object.keys(replacelist).length !== 0) {
     for (const key of Object.keys(replacelist)) {
       let replacestring = new RegExp(`#{${key}}`, 'gi')
+      let linkWithParameters = `${replacelist[key]}${createParameterString(information.parameters)}`
       if (customUrl) {
-        let url = customUrl.replace(/(#{url})/g, replacelist[key])
+        let url = customUrl.replace(/(#{url})/g, linkWithParameters)
         html = html.replace(replacestring, url)
       } else {
-        html = html.replace(replacestring, replacelist[key])
+        html = html.replace(replacestring, linkWithParameters)
       }
     }
     let basicReg = /#{(.*?)}/g
@@ -95,7 +96,6 @@ const replaceLinks = (str, replacelist = {}, customUrl = '') => {
 const createParameterString = (parameters) => {
   let availableUtmKeys = ['source', 'medium', 'name', 'term', 'content']
   let paramsArr = []
-
   // check if the parameters exist, otherwise don't bother
   if (parameters.utm || parameters.custom) {
     // loop through all the utm and custom keys
@@ -301,7 +301,7 @@ const sendmail = (done) => {
         console.log(err)
         done()
       }) // logs any error
-    done()
+    done()  
   }).catch(err => {
     console.log(err)
     done()
@@ -311,7 +311,7 @@ const sendmail = (done) => {
 gulp.task('links', (done) => {
   fs.readFile('./build/index.html', 'utf-8', (err, data) => {
     if (err) console.log(err)
-    fs.writeFile('./build/index.html', addParameters(replaceLinks(data, information.links), createParameterString(information.parameters), cheerio), 'utf-8', err => {
+    fs.writeFile('./build/index.html', replaceLinks(data, information.links), 'utf-8', err => {
       if (err) console.log(err)
       done()
     })
