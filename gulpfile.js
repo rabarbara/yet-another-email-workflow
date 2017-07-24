@@ -14,6 +14,7 @@ const imagemin = require('gulp-imagemin')
 const postcss = require('gulp-postcss')
 const uncss = require('postcss-uncss')
 
+
 // Compile sass into CSS & auto-inject into browsers
 gulp.task('sass', (done) => {
   return gulp.src('working/scss/*.scss')
@@ -227,8 +228,6 @@ gulp.task('img', (done) => {
     .pipe(gulp.dest('build/img'))
 })
 
-
-
 const sendmail = (done) => {
   const credentials = require('./credentials.json')
   const mg = mailgun.client({ username: 'api', key: process.env.MAILGUN_API_KEY || credentials.mailgun.key })
@@ -253,7 +252,7 @@ const sendmail = (done) => {
       }
     })
   })
-
+  const images = fs.createReadStream(path.join(__dirname, 'working', 'img', 'yaew.png'))
   Promise.all([html, text]).then(emails => {
     console.log(emails[1])
     mg.messages.create(credentials.mailgun.domain, {
@@ -261,7 +260,8 @@ const sendmail = (done) => {
       to: information.recipient,
       subject: information.subject,
       text: emails[1],
-      html: emails[0]
+      html: emails[0],
+      inline: [images]
     })
       .then(msg => {
         console.log(msg)
@@ -282,7 +282,6 @@ const sendmail = (done) => {
 gulp.task('email', gulp.series('css', 'premailer', 'txt', sendmail))
 gulp.task('build', gulp.series('css', 'premailer', 'txt', 'img'))
 gulp.task('serve', gulp.series('sass', gulp.parallel('browserSync', 'watchSassAndHtml')))
-
 
 module.exports = {
   replaceLinks,
