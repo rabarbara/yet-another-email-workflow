@@ -4,7 +4,7 @@
   "senderEmail":"example@example.org",
   "replyTo": [],
   "cc": [],
-  "recipient": "stavanja@gmail.com",
+  "recipient": "example@example.org",
   "links": {
     "links go here":"https://www.google.com"
   },

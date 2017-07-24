@@ -53,15 +53,20 @@ gulp.task('css', () => {
 * @param {object}
 * @return {string}
 */
-const replaceLinks = (str, replacelist = {}) => {
+const replaceLinks = (str, replacelist = {}, customUrl = '') => {
   // there has to be a string to pass through even if replacelist is empty
   if (str.length < 1) throw new Error('File is empty')
   // if there is no replacelist or it is empty, pass through the value
   let html = str
   if (Object.keys(replacelist).length !== 0) {
     for (const key of Object.keys(replacelist)) {
-      let replacestring = new RegExp(`#{${key}}`, 'g')
-      html = html.replace(replacestring, replacelist[key])
+      let replacestring = new RegExp(`#{${key}}`, 'gi')
+      if (customUrl) {
+        let url = customUrl.replace(/(#{url})/g, replacelist[key])
+        html = html.replace(replacestring, url)
+      } else {
+        html = html.replace(replacestring, replacelist[key])
+      }
     }
     let basicReg = /#{(.*?)}/g
     let els = html.match(basicReg)
@@ -81,7 +86,6 @@ const replaceLinks = (str, replacelist = {}) => {
     return str
   }
 }
-
 
 /**
 * creates a url parameter string from the links object given
@@ -116,7 +120,6 @@ const createParameterString = (parameters) => {
   let paramsString = paramsArr.length !== 0 ? `?${paramsArr.join('&')}` : ''
   return paramsString
 }
-
 
 /**
 * replaces each instance of a href atrribute in the first argument for the values provided in the second argument
@@ -162,12 +165,12 @@ const createHtml = (html, cssPath, addParameters, createParameterString, cheerio
     let email = html.replace('<link rel="stylesheet" href="css/styles.css">', `<link rel="stylesheet" href="${cssPath}">`).replace('img/', 'working/img/')
     juice.juiceResources(email, { preserveMediaQueries: true, applyStyleTags: true }, (err, html) => {
       if (err) reject(err)
-      // replace the url placeholder and add url parameters
-      resolve(addParameters(replaceLinks(html, information.links), createParameterString(information.parameters), cheerio))
+      // just create the html that will be used
+      resolve(html)
     })
   })
 }
-
+// addParameters(replaceLinks(html, information.links), createParameterString(information.parameters), cheerio)
 gulp.task('premailer', (done) => {
   fs.readFile('working/index.html', 'utf-8', (err, html) => {
     if (err) throw err
@@ -227,8 +230,6 @@ gulp.task('img', (done) => {
     .pipe(gulp.dest('build/img'))
 })
 
-
-
 const sendmail = (done) => {
   const credentials = require('./credentials.json')
   const mg = mailgun.client({ username: 'api', key: process.env.MAILGUN_API_KEY || credentials.mailgun.key })
@@ -237,7 +238,8 @@ const sendmail = (done) => {
     fs.readFile('./build/index.html', 'utf-8', (err, data) => {
       if (err) throw Error(err)
       if (data.length > 0) {
-        resolve(data)
+        let newData = data.replace(/img\/(.*?)"/gi, 'cid:$1"')
+        resolve(newData)
       } else {
         reject('Empty file')
       }
@@ -253,15 +255,42 @@ const sendmail = (done) => {
       }
     })
   })
-
-  Promise.all([html, text]).then(emails => {
-    console.log(emails[1])
+  const images = new Promise((resolve, reject) => {
+    // read the path to the images and return a readStream for each file
+    fs.readdir(path.join(__dirname, 'working', 'img'), (err, files) => {
+      console.log(files)
+      if (err) reject(err)
+      const streamOfImages = files.map(img => {
+        return fs.createReadStream(path.join(__dirname, 'working', 'img', img))
+      })
+      resolve(streamOfImages)
+    })
+  })
+  const attachments = new Promise((resolve, reject) => {
+    // read the path to the attachments and return a readStream for each file
+    fs.readdir(path.join(__dirname, 'working', 'attachments'), (err, files) => {
+      if (err) throw Error(err)
+      const streamOfFiles = files
+      .filter(file => {
+        // .gitkeep should not be sent
+        return file !== '.gitkeep'
+      })
+      .map(file => {
+        return fs.createReadStream(path.join(__dirname, 'working', 'attachments', file))
+      })
+      resolve(streamOfFiles)
+    })
+  })
+  Promise.all([html, text, images, attachments]).then(emails => {
+    let [html, text, images, attachments] = emails
     mg.messages.create(credentials.mailgun.domain, {
       from: `${information.senderName} ${information.senderEmail}`,
       to: information.recipient,
       subject: information.subject,
-      text: emails[1],
-      html: emails[0]
+      text: text,
+      html: html,
+      inline: images,
+      attachment: attachments
     })
       .then(msg => {
         console.log(msg)
@@ -279,8 +308,18 @@ const sendmail = (done) => {
   })
 }
 
+gulp.task('links', (done) => {
+  fs.readFile('./build/index.html', 'utf-8', (err, data) => {
+    if (err) console.log(err)
+    fs.writeFile('./build/index.html', addParameters(replaceLinks(data, information.links), createParameterString(information.parameters), cheerio), 'utf-8', err => {
+      if (err) console.log(err)
+      done()
+    })
+  })
+})
+
 gulp.task('email', gulp.series('css', 'premailer', 'txt', sendmail))
-gulp.task('build', gulp.series('css', 'premailer', 'txt', 'img'))
+gulp.task('build', gulp.series('css', 'premailer', 'txt', 'img', 'links'))
 gulp.task('serve', gulp.series('sass', gulp.parallel('browserSync', 'watchSassAndHtml')))
 
 
