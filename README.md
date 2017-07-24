@@ -63,6 +63,8 @@ a key value pair
 
 ```
 
+The string `#{example` will get replaced with the proper link with all the utm parameters appended.
+
 #### Information.json
 
 Here you input all the required data. If you do not wish to use the automatic url insertion feature or the url parameter appending feature, leave the links and the parameters section as is.
