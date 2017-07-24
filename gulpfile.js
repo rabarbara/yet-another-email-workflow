@@ -14,7 +14,6 @@ const imagemin = require('gulp-imagemin')
 const postcss = require('gulp-postcss')
 const uncss = require('postcss-uncss')
 
-
 // Compile sass into CSS & auto-inject into browsers
 gulp.task('sass', (done) => {
   return gulp.src('working/scss/*.scss')
@@ -83,7 +82,6 @@ const replaceLinks = (str, replacelist = {}) => {
   }
 }
 
-
 /**
 * creates a url parameter string from the links object given
 * @param {object}
@@ -117,7 +115,6 @@ const createParameterString = (parameters) => {
   let paramsString = paramsArr.length !== 0 ? `?${paramsArr.join('&')}` : ''
   return paramsString
 }
-
 
 /**
 * replaces each instance of a href atrribute in the first argument for the values provided in the second argument
@@ -236,7 +233,8 @@ const sendmail = (done) => {
     fs.readFile('./build/index.html', 'utf-8', (err, data) => {
       if (err) throw Error(err)
       if (data.length > 0) {
-        let newData = data.replace(/img\/(.*?)"/g, 'cid:$1')
+        let newData = data.replace(/img\/(.*?)"/gi, 'cid:$1"')
+        console.log(newData)
         resolve(newData)
       } else {
         reject('Empty file')
