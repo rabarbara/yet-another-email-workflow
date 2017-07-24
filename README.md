@@ -53,6 +53,16 @@ Run `npm run watch`. The development server will start and a browser window will
 The two files in the working folder you should edit are the `index.html` and the `scss\styles.scss`.
 You should also fill out the information in `information.json`.
 
+You reference the links you supplied in the information.json with the following syntax `#{example}`. In the information.json you reference this link under the `links` section as
+a key value pair 
+```json
+
+"links": {
+    "example":"https://www.john-doe.org/header"
+  },
+
+```
+
 #### Information.json
 
 Here you input all the required data. If you do not wish to use the automatic url insertion feature or the url parameter appending feature, leave the links and the parameters section as is.
