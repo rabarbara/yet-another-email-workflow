@@ -158,7 +158,7 @@ const addParameters = (str, parameters = '', cheerio) => {
 * @param {string}
 * @return {string}
 */
-const createHtml = (html, cssPath, addParameters, createParameterString, cheerio) => {
+const createHtml = (html, cssPath) => {
   return new Promise((resolve, reject) => {
     // replace the file path in the html file so that juice can find it, looking from the root of the project
     // replace the path for images since juice needs all files to be present
