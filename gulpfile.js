@@ -53,15 +53,20 @@ gulp.task('css', () => {
 * @param {object}
 * @return {string}
 */
-const replaceLinks = (str, replacelist = {}) => {
+const replaceLinks = (str, replacelist = {}, customUrl = '') => {
   // there has to be a string to pass through even if replacelist is empty
   if (str.length < 1) throw new Error('File is empty')
   // if there is no replacelist or it is empty, pass through the value
   let html = str
   if (Object.keys(replacelist).length !== 0) {
     for (const key of Object.keys(replacelist)) {
-      let replacestring = new RegExp(`#{${key}}`, 'g')
-      html = html.replace(replacestring, replacelist[key])
+      let replacestring = new RegExp(`#{${key}}`, 'gi')
+      if (customUrl) {
+        let url = customUrl.replace(/(#{url})/g, replacelist[key])
+        html = html.replace(replacestring, url)
+      } else {
+        html = html.replace(replacestring, replacelist[key])
+      }
     }
     let basicReg = /#{(.*?)}/g
     let els = html.match(basicReg)
@@ -160,12 +165,12 @@ const createHtml = (html, cssPath, addParameters, createParameterString, cheerio
     let email = html.replace('<link rel="stylesheet" href="css/styles.css">', `<link rel="stylesheet" href="${cssPath}">`).replace('img/', 'working/img/')
     juice.juiceResources(email, { preserveMediaQueries: true, applyStyleTags: true }, (err, html) => {
       if (err) reject(err)
-      // replace the url placeholder and add url parameters
-      resolve(addParameters(replaceLinks(html, information.links), createParameterString(information.parameters), cheerio))
+      // just create the html that will be used
+      resolve(html)
     })
   })
 }
-
+// addParameters(replaceLinks(html, information.links), createParameterString(information.parameters), cheerio)
 gulp.task('premailer', (done) => {
   fs.readFile('working/index.html', 'utf-8', (err, html) => {
     if (err) throw err
@@ -303,8 +308,18 @@ const sendmail = (done) => {
   })
 }
 
+gulp.task('links', (done) => {
+  fs.readFile('./build/index.html', 'utf-8', (err, data) => {
+    if (err) console.log(err)
+    fs.writeFile('./build/index.html', addParameters(replaceLinks(data, information.links), createParameterString(information.parameters), cheerio), 'utf-8', err => {
+      if (err) console.log(err)
+      done()
+    })
+  })
+})
+
 gulp.task('email', gulp.series('css', 'premailer', 'txt', sendmail))
-gulp.task('build', gulp.series('css', 'premailer', 'txt', 'img'))
+gulp.task('build', gulp.series('css', 'premailer', 'txt', 'img', 'links'))
 gulp.task('serve', gulp.series('sass', gulp.parallel('browserSync', 'watchSassAndHtml')))
 
 module.exports = {
