@@ -162,7 +162,7 @@ const createHtml = (html, cssPath) => {
   return new Promise((resolve, reject) => {
     // replace the file path in the html file so that juice can find it, looking from the root of the project
     // replace the path for images since juice needs all files to be present
-    let email = html.replace('<link rel="stylesheet" href="css/styles.css">', `<link rel="stylesheet" href="${cssPath}">`).replace('img/', 'working/img/')
+    let email = html.replace('<link rel="stylesheet" href="css/styles.css">', `<link rel="stylesheet" href="${cssPath}">`).replace(/img\//g, 'working/img/')
     juice.juiceResources(email, { preserveMediaQueries: true, applyStyleTags: true }, (err, html) => {
       if (err) reject(err)
       // just create the html that will be used
@@ -301,7 +301,7 @@ const sendmail = (done) => {
         console.log(err)
         done()
       }) // logs any error
-    done()  
+    done()
   }).catch(err => {
     console.log(err)
     done()
