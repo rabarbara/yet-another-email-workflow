@@ -219,7 +219,7 @@ gulp.task('reload', (done) => {
 
 // watch scss and html files for changes
 gulp.task('watchSassAndHtml', () => {
-  gulp.watch('working/scss/*.scss', gulp.parallel('sass', 'reload'))
+  gulp.watch('working/scss/*.scss', gulp.series('sass', 'reload'))
   gulp.watch('working/*.html', gulp.series('reload'))
 })
 
