@@ -291,6 +291,7 @@ const sendmail = (done) => {
     mg.messages.create(credentials.mailgun.domain, {
       from: `${information.senderName} ${information.senderEmail}`,
       to: information.recipient,
+      cc: `${information.cc}`,
       subject: information.subject,
       text: text,
       html: html,
