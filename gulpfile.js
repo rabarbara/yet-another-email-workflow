@@ -162,8 +162,8 @@ const createHtml = (html, cssPath) => {
   return new Promise((resolve, reject) => {
     // replace the file path in the html file so that juice can find it, looking from the root of the project
     // replace the path for images since juice needs all files to be present
-    let email = html.replace('<link rel="stylesheet" href="css/styles.css">', `<link rel="stylesheet" href="${cssPath}">`).replace('img/', 'working/img/')
-    juice.juiceResources(email, { preserveMediaQueries: true, applyStyleTags: true }, (err, html) => {
+    let email = html.replace('<link rel="stylesheet" href="css/styles.css">', `<link rel="stylesheet" href="${cssPath}">`).replace(/img\//g, 'working/img/')
+    juice.juiceResources(email, { preserveMediaQueries: true, applyStyleTags: true, webResources: {images: false} }, (err, html) => {
       if (err) reject(err)
       // just create the html that will be used
       resolve(html)
@@ -175,12 +175,12 @@ gulp.task('premailer', (done) => {
   fs.readFile('working/index.html', 'utf-8', (err, html) => {
     if (err) throw err
     createHtml(html, 'working/css/styles.css', addParameters, createParameterString, cheerio).then(html => {
-      fs.writeFile('build/index.html', html.replace('working/img/', 'img/'), 'utf8', err => {
+      fs.writeFile('build/index.html', html.replace(/working\/img\//g, 'img/'), 'utf8', err => {
         if (err) {
           if (err.code === 'ENOENT') {
             fs.mkdir('build', err => {
               if (err) console.log(err)
-              fs.writeFile('build/index.html', html.replace('working/img/', 'img/'), 'utf8', err => {
+              fs.writeFile('build/index.html', html.replace(/working\/img\//g, 'img/'), 'utf8', err => {
                 if (err) console.log(err)
                 done()
               })
@@ -260,7 +260,12 @@ const sendmail = (done) => {
     fs.readdir(path.join(__dirname, 'working', 'img'), (err, files) => {
       console.log(files)
       if (err) reject(err)
-      const streamOfImages = files.map(img => {
+      const streamOfImages = files
+      .filter(file => {
+        // .gitkeep should not be sent
+        return file !== '.gitkeep'
+      })
+      .map(img => {
         return fs.createReadStream(path.join(__dirname, 'working', 'img', img))
       })
       resolve(streamOfImages)
@@ -301,7 +306,7 @@ const sendmail = (done) => {
         console.log(err)
         done()
       }) // logs any error
-    done()  
+    done()
   }).catch(err => {
     console.log(err)
     done()
@@ -329,7 +334,7 @@ gulp.task('inxmailLinks', (done) => {
   })
 })
 
-gulp.task('email', gulp.series('css', 'premailer', 'txt', 'links', sendmail))
+gulp.task('email', gulp.series('css', 'premailer', 'txt', 'img', 'links', sendmail))
 gulp.task('build', gulp.series('css', 'premailer', 'img', 'links', 'txt'))
 gulp.task('inxmail', gulp.series('css', 'premailer', 'img', 'inxmailLinks', 'txt'))
 gulp.task('serve', gulp.series('sass', gulp.parallel('browserSync', 'watchSassAndHtml')))
