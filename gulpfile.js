@@ -94,7 +94,7 @@ const replaceLinks = (str, replacelist = {}, customUrl = '') => {
 * @return {string}
 */
 const createParameterString = (parameters) => {
-  let availableUtmKeys = ['source', 'medium', 'name', 'term', 'content']
+  let availableUtmKeys = ['source', 'medium', 'campaign', 'term', 'content']
   let paramsArr = []
   // check if the parameters exist, otherwise don't bother
   if (parameters.utm || parameters.custom) {
