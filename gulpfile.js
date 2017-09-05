@@ -324,20 +324,8 @@ gulp.task('links', (done) => {
   })
 })
 
-gulp.task('inxmailLinks', (done) => {
-  fs.readFile('./build/index.html', 'utf-8', (err, data) => {
-    if (err) console.log(err)
-    let inxRegex = `[%url:unique-count; '#{url}'; '#{report}' ;  ; '#{report}']`
-    fs.writeFile('./build/index.html', replaceLinks(data, information.links, inxRegex), 'utf-8', err => {
-      if (err) console.log(err)
-      done()
-    })
-  })
-})
-
 gulp.task('email', gulp.series('css', 'premailer', 'txt', 'img', 'links', sendmail))
 gulp.task('build', gulp.series('css', 'premailer', 'img', 'links', 'txt'))
-gulp.task('inxmail', gulp.series('css', 'premailer', 'img', 'inxmailLinks', 'txt'))
 gulp.task('serve', gulp.series('sass', gulp.parallel('browserSync', 'watchSassAndHtml')))
 
 module.exports = {
